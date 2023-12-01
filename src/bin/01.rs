@@ -27,33 +27,18 @@ pub fn part_two(input: &str) -> Option<u64> {
     ];
 
     for line in input.lines() {
-        let first_occ_digits = list.map(|x| (line.find(x).map(|x| x as i32), x));
-        let last_occ_digits = list.map(|x| (line.rfind(x).map(|x| x as i32), x));
-
-        let mut first_digit = first_occ_digits
+        let first_digit = list
             .iter()
-            .min_by_key(|&(optional_index, _)| optional_index.unwrap_or(i32::MAX));
+            .filter_map(|&x| line.find(x).map(|index| (index, x)))
+            .min_by_key(|&(index, _)| index);
 
-        if first_occ_digits
+        let last_digit = list
             .iter()
-            .all(|&(usize_option, _)| usize_option.is_none())
-        {
-            first_digit = None;
-        }
+            .filter_map(|&x| line.rfind(x).map(|index| (index, x)))
+            .max_by_key(|&(index, _)| index);
 
-        let mut last_digit = last_occ_digits
-            .iter()
-            .max_by_key(|&(optional_index, _)| optional_index.unwrap_or(i32::MIN));
-
-        if last_occ_digits
-            .iter()
-            .all(|&(usize_option, _)| usize_option.is_none())
-        {
-            last_digit = None;
-        }
-
-        let n1 = translate_to_digit(first_digit.unwrap_or(&(Some(0), "0")).1);
-        let n2 = translate_to_digit(last_digit.unwrap_or(&(Some(0), "0")).1);
+        let n1 = translate_to_digit(first_digit.unwrap_or((0, "0")).1);
+        let n2 = translate_to_digit(last_digit.unwrap_or((0, "0")).1);
 
         let num = n1 * 10 + n2;
 
@@ -74,17 +59,8 @@ fn translate_to_digit(input: &str) -> i32 {
         "seven" => 7,
         "eight" => 8,
         "nine" => 9,
-        "0" => 0,
-        "1" => 1,
-        "2" => 2,
-        "3" => 3,
-        "4" => 4,
-        "5" => 5,
-        "6" => 6,
-        "7" => 7,
-        "8" => 8,
-        "9" => 9,
-        &_ => 0,
+        "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" => input.parse().unwrap(),
+        _ => 0,
     }
 }
 
