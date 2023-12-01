@@ -4,20 +4,13 @@ pub fn part_one(input: &str) -> Option<u64> {
     let mut sum: u64 = 0;
     for line in input.lines() {
         let calibration_text: String = String::from(line);
-        let mut num: u32 = 0;
-        for char1 in calibration_text.chars() {
-            if char1.is_ascii_digit() {
-                num += char1.to_digit(10).unwrap() * 10;
-                break;
-            }
-        }
+        let digits: Vec<u32> = calibration_text
+            .chars()
+            .filter(|x| x.is_ascii_digit())
+            .map(|x| x.to_digit(10).unwrap())
+            .collect();
 
-        for char1 in calibration_text.chars().rev() {
-            if char1.is_ascii_digit() {
-                num += char1.to_digit(10).unwrap();
-                break;
-            }
-        }
+        let num = digits.first().unwrap_or(&0) * 10 + digits.last().unwrap_or(&0);
 
         sum += num as u64;
     }
