@@ -20,12 +20,42 @@ pub fn part_one(input: &str) -> Option<u64> {
 
 pub fn part_two(input: &str) -> Option<u64> {
     let mut sum: u64 = 0;
-    for line in input.lines() {
-        let calibration_text: String = String::from(line);
-        let n1 = find_digit(&calibration_text, false) * 10;
-        let n2 = find_digit(&calibration_text, true);
 
-        let num = n1 + n2;
+    let list = [
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "one", "two", "three", "four", "five",
+        "six", "seven", "eight", "nine",
+    ];
+
+    for line in input.lines() {
+        let first_occ_digits = list.map(|x| (line.find(x).map(|x| x as i32), x));
+        let last_occ_digits = list.map(|x| (line.rfind(x).map(|x| x as i32), x));
+
+        let mut first_digit = first_occ_digits
+            .iter()
+            .min_by_key(|&(optional_index, _)| optional_index.unwrap_or(i32::MAX));
+
+        if first_occ_digits
+            .iter()
+            .all(|&(usize_option, _)| usize_option.is_none())
+        {
+            first_digit = None;
+        }
+
+        let mut last_digit = last_occ_digits
+            .iter()
+            .max_by_key(|&(optional_index, _)| optional_index.unwrap_or(i32::MIN));
+
+        if last_occ_digits
+            .iter()
+            .all(|&(usize_option, _)| usize_option.is_none())
+        {
+            last_digit = None;
+        }
+
+        let n1 = translate_to_digit(first_digit.unwrap_or(&(Some(0), "0")).1);
+        let n2 = translate_to_digit(last_digit.unwrap_or(&(Some(0), "0")).1);
+
+        let num = n1 * 10 + n2;
 
         sum += num as u64;
     }
@@ -33,75 +63,28 @@ pub fn part_two(input: &str) -> Option<u64> {
     Some(sum)
 }
 
-fn find_digit(input: &str, reverse: bool) -> u32 {
-    let list = [
-        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-    ];
-
-    let mut found_digit: Option<usize> = None;
-    let mut digit_found_at_index: Option<usize> = None;
-
-    for (index, value) in list.iter().enumerate() {
-        if let Some(curr_found_index) = find_digit_or_string(
-            input,
-            char::from_digit(index as u32, 10).unwrap(),
-            value,
-            reverse,
-        ) {
-            if !reverse {
-                // Update min_index and min_value if it's the first iteration or if the current result is smaller
-                if digit_found_at_index.map_or(true, |curr_min| curr_found_index < curr_min) {
-                    found_digit = Some(index);
-                    digit_found_at_index = Some(curr_found_index);
-                }
-            } else {
-                // Update max_index and max_value if it's the first iteration or if the current result is larger
-                if digit_found_at_index.map_or(true, |curr_max| curr_found_index > curr_max) {
-                    found_digit = Some(index);
-                    digit_found_at_index = Some(curr_found_index);
-                }
-            }
-        }
-    }
-
-    found_digit.unwrap_or(0) as u32
-}
-
-fn find_digit_or_string(
-    input: &str,
-    digit: char,
-    digit_string: &str,
-    reverse: bool,
-) -> Option<usize> {
-    let str_place: Option<usize>;
-    let dig_place: Option<usize>;
-
-    if !reverse {
-        str_place = input.find(digit_string);
-        dig_place = input.find(digit);
-    } else {
-        str_place = input.rfind(digit_string);
-        dig_place = input.rfind(digit);
-    }
-
-    if !reverse {
-        let min = match (str_place, dig_place) {
-            (Some(value1), Some(value2)) => Some(value1.min(value2)),
-            (Some(value1), None) => Some(value1),
-            (None, Some(value2)) => Some(value2),
-            (None, None) => None,
-        };
-
-        return min;
-    } else {
-        let max = match (str_place, dig_place) {
-            (Some(value1), Some(value2)) => Some(value1.max(value2)),
-            (Some(value1), None) => Some(value1),
-            (None, Some(value2)) => Some(value2),
-            (None, None) => None,
-        };
-
-        return max;
+fn translate_to_digit(input: &str) -> i32 {
+    match input {
+        "one" => 1,
+        "two" => 2,
+        "three" => 3,
+        "four" => 4,
+        "five" => 5,
+        "six" => 6,
+        "seven" => 7,
+        "eight" => 8,
+        "nine" => 9,
+        "0" => 0,
+        "1" => 1,
+        "2" => 2,
+        "3" => 3,
+        "4" => 4,
+        "5" => 5,
+        "6" => 6,
+        "7" => 7,
+        "8" => 8,
+        "9" => 9,
+        &_ => 0,
     }
 }
 
