@@ -3,8 +3,7 @@ advent_of_code::solution!(1);
 pub fn part_one(input: &str) -> Option<u64> {
     let mut sum: u64 = 0;
     for line in input.lines() {
-        let calibration_text: String = String::from(line);
-        let digits: Vec<u32> = calibration_text
+        let digits: Vec<u32> = line
             .chars()
             .filter(|x| x.is_ascii_digit())
             .map(|x| x.to_digit(10).unwrap())
@@ -21,18 +20,18 @@ pub fn part_one(input: &str) -> Option<u64> {
 pub fn part_two(input: &str) -> Option<u64> {
     let mut sum: u64 = 0;
 
-    let list = [
+    let possible_nums = [
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "one", "two", "three", "four", "five",
         "six", "seven", "eight", "nine",
     ];
 
     for line in input.lines() {
-        let first_digit = list
+        let first_digit = possible_nums
             .iter()
             .filter_map(|&x| line.find(x).map(|index| (index, x)))
             .min_by_key(|&(index, _)| index);
 
-        let last_digit = list
+        let last_digit = possible_nums
             .iter()
             .filter_map(|&x| line.rfind(x).map(|index| (index, x)))
             .max_by_key(|&(index, _)| index);
