@@ -22,27 +22,26 @@ pub fn part_one(input: &str) -> Option<u64> {
         sum += num as u64;
     }
 
-    return Some(sum);
+    Some(sum)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
     let mut sum: u64 = 0;
     for line in input.lines() {
         let calibration_text: String = String::from(line);
-        let num: u32;
         let n1 = find_digit(&calibration_text, false) * 10;
         let n2 = find_digit(&calibration_text, true);
 
-        num = n1 + n2;
+        let num = n1 + n2;
 
         sum += num as u64;
     }
 
-    return Some(sum);
+    Some(sum)
 }
 
 fn find_digit(input: &str, reverse: bool) -> u32 {
-    let list = vec![
+    let list = [
         "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];
 
@@ -72,7 +71,7 @@ fn find_digit(input: &str, reverse: bool) -> u32 {
         }
     }
 
-    return found_digit.unwrap_or(0) as u32;
+    found_digit.unwrap_or(0) as u32
 }
 
 fn find_digit_or_string(
@@ -119,13 +118,17 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        let result = part_one(&advent_of_code::template::read_file_part("examples", DAY, 1));
+        let result = part_one(&advent_of_code::template::read_file_part(
+            "examples", DAY, 1,
+        ));
         assert_eq!(result, Some(142));
     }
 
     #[test]
     fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_file_part("examples", DAY, 2));
+        let result = part_two(&advent_of_code::template::read_file_part(
+            "examples", DAY, 2,
+        ));
         assert_eq!(result, Some(281));
     }
 }
