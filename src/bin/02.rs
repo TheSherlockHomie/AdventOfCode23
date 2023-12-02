@@ -1,15 +1,15 @@
 advent_of_code::solution!(2);
 
 pub fn part_one(input: &str) -> Option<u32> {
-    let possible_red: u32 = 12;
-    let possible_blue: u32 = 14;
-    let possible_green: u32 = 13;
+    const POSSIBLE_RED: u32 = 12;
+    const POSSIBLE_BLUE: u32 = 14;
+    const POSSIBLE_GREEN: u32 = 13;
 
     let games: Vec<Game> = input.lines().map(parse_game).collect();
 
     let sum_game_id: u32 = games
         .iter()
-        .filter(|&x| is_game_valid(x, possible_red, possible_blue, possible_green))
+        .filter(|&x| is_game_valid(x, POSSIBLE_RED, POSSIBLE_BLUE, POSSIBLE_GREEN))
         .map(|x| x.game_id)
         .sum();
 
@@ -43,7 +43,11 @@ struct Count {
 
 fn parse_game(line: &str) -> Game {
     let parts: Vec<&str> = line.split(':').collect();
-    let game_id: u32 = parts[0].trim_start_matches("Game").trim().parse().unwrap();
+    let game_id: u32 = parts[0]
+        .trim_start_matches("Game")
+        .trim()
+        .parse()
+        .expect("Failed to parse game_id");
     let counts: Vec<Count> = parts[1].trim().split(';').map(parse_counts).collect();
 
     Game { game_id, counts }
@@ -58,7 +62,7 @@ fn parse_counts(count_str: &str) -> Count {
 
     for color in count_str.split(',').map(|str| str.trim()) {
         let tokens: Vec<&str> = color.split_ascii_whitespace().collect();
-        let value: u32 = tokens[0].parse().unwrap();
+        let value: u32 = tokens[0].parse().expect("Failed to parse count value");
 
         match tokens[1] {
             "red" => count.red = value,
@@ -82,20 +86,10 @@ fn is_game_valid(game: &Game, max_red: u32, max_blue: u32, max_green: u32) -> bo
 }
 
 fn min_possible_counts(counts: Vec<Count>) -> Count {
-    let mut min_red: u32 = 0;
-    let mut min_blue: u32 = 0;
-    let mut min_green: u32 = 0;
-
-    for count in counts {
-        min_red = min_red.max(count.red);
-        min_blue = min_blue.max(count.blue);
-        min_green = min_green.max(count.green);
-    }
-
     Count {
-        red: min_red,
-        blue: min_blue,
-        green: min_green,
+        red: counts.iter().map(|c| c.red).max().unwrap_or(0),
+        blue: counts.iter().map(|c| c.blue).max().unwrap_or(0),
+        green: counts.iter().map(|c| c.green).max().unwrap_or(0),
     }
 }
 
