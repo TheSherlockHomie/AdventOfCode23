@@ -9,8 +9,13 @@ pub fn part_one(input: &str) -> Option<u32> {
 
     let sum_game_id: u32 = games
         .iter()
-        .filter(|&x| is_game_valid(x, POSSIBLE_RED, POSSIBLE_BLUE, POSSIBLE_GREEN))
-        .map(|x| x.game_id)
+        .map(|x| (x.game_id, min_possible_counts(x.counts.clone())))
+        .filter(|(_, count)| {
+            count.red <= POSSIBLE_RED
+                && count.blue <= POSSIBLE_BLUE
+                && count.green <= POSSIBLE_GREEN
+        })
+        .map(|(game_id, _)| game_id)
         .sum();
 
     Some(sum_game_id)
@@ -73,16 +78,6 @@ fn parse_counts(count_str: &str) -> Count {
     }
 
     count
-}
-
-fn is_game_valid(game: &Game, max_red: u32, max_blue: u32, max_green: u32) -> bool {
-    let valid_counts: Vec<&Count> = game
-        .counts
-        .iter()
-        .filter(|&count| count.red <= max_red && count.blue <= max_blue && count.green <= max_green)
-        .collect();
-
-    valid_counts.len() == game.counts.len()
 }
 
 fn min_possible_counts(counts: Vec<Count>) -> Count {
